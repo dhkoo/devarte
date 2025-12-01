@@ -20,8 +20,11 @@ export default function Home() {
 
       {/* Header / Logo */}
       <div className="absolute top-8 left-8 z-20 pointer-events-none">
-        <h1 className="text-2xl font-bold tracking-widest text-white uppercase">
-          Radika<span className="text-blue-500">.</span>
+        <h1 className="font-[family-name:var(--font-noto-sans-kr)] text-xl font-black text-white">
+          <span className="text-gray-400 font-normal">{'<'}</span>
+          개발자의
+          <span className="text-cyan-400"> 디자인</span>
+          <span className="text-gray-400 font-normal">{' />'}</span>
         </h1>
       </div>
     </main>

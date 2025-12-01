@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import { useRef, useMemo, useEffect, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ImageItem } from '@/data/images';
@@ -9,9 +9,10 @@ import ImageCard from './ImageCard';
 interface SphereGalleryProps {
   images: ImageItem[];
   onSelect: (item: ImageItem | null) => void;
+  activeItem: ImageItem | null;
 }
 
-export default function SphereGallery({ images, onSelect }: SphereGalleryProps) {
+export default function SphereGallery({ images, onSelect, activeItem }: SphereGalleryProps) {
   const groupRef = useRef<THREE.Group>(null);
 
   const rotationVelocity = useRef({ x: 0, y: 0 });
@@ -124,9 +125,6 @@ export default function SphereGallery({ images, onSelect }: SphereGalleryProps) 
   });
 
   const handleImageClick = useCallback((id: number) => {
-    // 드래그했으면 클릭 무시
-    if (hasDragged.current) return;
-
     const item = itemsWithPosition.find(i => i.id === id);
     if (!item || !groupRef.current) return;
 
@@ -157,6 +155,7 @@ export default function SphereGallery({ images, onSelect }: SphereGalleryProps) 
           item={item}
           position={item.position}
           onClick={handleImageClick}
+          isSelected={activeItem?.id === item.id}
         />
       ))}
     </group>

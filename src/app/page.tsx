@@ -11,14 +11,11 @@ export default function Home() {
   return (
     <main className="relative w-full h-screen overflow-hidden bg-black">
       <div className="absolute top-0 left-0 w-full h-full z-0">
-        <Scene images={images} onSelect={setActiveItem} />
+        <Scene images={images} onSelect={setActiveItem} activeItem={activeItem} />
       </div>
       
       <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
-        {/* Pass pointer-events-auto to interactive children */}
-        <div className="pointer-events-auto w-full h-full">
-            <Overlay activeItem={activeItem} onClose={() => setActiveItem(null)} />
-        </div>
+        <Overlay activeItem={activeItem} />
       </div>
 
       {/* Header / Logo */}

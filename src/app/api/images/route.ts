@@ -5,6 +5,7 @@ import path from 'path';
 interface ImageMetadata {
   title: string;
   description: string;
+  links?: string[];
 }
 
 export async function GET() {
@@ -29,6 +30,7 @@ export async function GET() {
       url: `/images/${file}`,
       title: metadata[file]?.title || file.replace(/\.[^/.]+$/, ''),
       description: metadata[file]?.description || '',
+      links: metadata[file]?.links,
     }));
 
     return NextResponse.json(images);

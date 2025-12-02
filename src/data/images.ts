@@ -3,4 +3,5 @@ export interface ImageItem {
   url: string;
   title: string;
   description: string;
+  links?: string[];
 }

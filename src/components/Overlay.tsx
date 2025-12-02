@@ -58,6 +58,43 @@ export default function Overlay({ activeItem }: OverlayProps) {
           >
             {activeItem.description}
           </motion.p>
+
+          {activeItem.links && activeItem.links.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                marginTop: '16px',
+              }}
+            >
+              {activeItem.links.map((link, index) => (
+                <a
+                  key={index}
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '14px',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    pointerEvents: 'auto',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <svg style={{ width: '12px', height: '12px', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  {link}
+                </a>
+              ))}
+            </motion.div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

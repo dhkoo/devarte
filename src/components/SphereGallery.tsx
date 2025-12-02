@@ -83,8 +83,8 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
         const moveY = e.clientY - lastPointer.current.y;
 
         rotationVelocity.current = {
-          x: moveY * 0.003,
-          y: moveX * 0.003
+          x: moveY * 0.001,
+          y: moveX * 0.001
         };
       }
 

@@ -195,6 +195,7 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
           position={item.position}
           onClick={handleImageClick}
           isSelected={activeItem?.id === item.id}
+          hasActiveItem={activeItem !== null}
         />
       ))}
     </group>

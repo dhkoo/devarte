@@ -11,6 +11,7 @@ interface ImageCardProps {
   position: [number, number, number];
   onClick: (id: number) => void;
   isSelected?: boolean;
+  hasActiveItem?: boolean;
 }
 
 // 카드 최대 크기
@@ -21,12 +22,16 @@ const MAX_HEIGHT = 3.3;
 const SELECTED_WIDTH = 4.0;
 const SELECTED_HEIGHT = 5.0;
 
-export default function ImageCard({ item, position, onClick, isSelected = false }: ImageCardProps) {
+export default function ImageCard({ item, position, onClick, isSelected = false, hasActiveItem = false }: ImageCardProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
+  const billboardRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const [cardSize, setCardSize] = useState<[number, number]>([MAX_WIDTH, MAX_HEIGHT]);
   const texture = useTexture(item.url);
+
+  // 각 카드마다 다른 애니메이션 오프셋 (아이템 id 기반)
+  const floatOffset = useMemo(() => item.id * 1.5, [item.id]);
 
   // 이미지 비율에 맞춰 카드 크기 계산
   useEffect(() => {
@@ -177,6 +182,26 @@ export default function ImageCard({ item, position, onClick, isSelected = false 
       meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
     }
 
+    // 선택되지 않은 카드들의 둥둥 떠다니는 애니메이션
+    if (billboardRef.current && hasActiveItem && !isSelected) {
+      const time = state.clock.elapsedTime + floatOffset;
+      // 부드러운 위아래 움직임
+      const floatY = Math.sin(time * 0.8) * 0.15;
+      // 약간의 좌우 흔들림
+      const floatX = Math.sin(time * 0.5) * 0.08;
+      // 살짝 기울어지는 느낌
+      const tiltZ = Math.sin(time * 0.6) * 0.03;
+
+      billboardRef.current.position.y = floatY;
+      billboardRef.current.position.x = floatX;
+      billboardRef.current.rotation.z = tiltZ;
+    } else if (billboardRef.current) {
+      // 포커싱 해제 시 원래 위치로 부드럽게 복귀
+      billboardRef.current.position.y = THREE.MathUtils.lerp(billboardRef.current.position.y, 0, delta * 3);
+      billboardRef.current.position.x = THREE.MathUtils.lerp(billboardRef.current.position.x, 0, delta * 3);
+      billboardRef.current.rotation.z = THREE.MathUtils.lerp(billboardRef.current.rotation.z, 0, delta * 3);
+    }
+
     // 후광 애니메이션
     if (glowRef.current && glowMaterial.uniforms) {
       glowMaterial.uniforms.time.value = state.clock.elapsedTime;
@@ -234,23 +259,25 @@ export default function ImageCard({ item, position, onClick, isSelected = false 
 
   return (
     <Billboard position={position} follow={true} lockX={false} lockY={false} lockZ={false}>
-      {/* 후광 효과 */}
-      <mesh ref={glowRef} position={[0, 0, -0.01]}>
-        <planeGeometry args={glowSize} />
-        <primitive object={glowMaterial} attach="material" />
-      </mesh>
+      <group ref={billboardRef}>
+        {/* 후광 효과 */}
+        <mesh ref={glowRef} position={[0, 0, -0.01]}>
+          <planeGeometry args={glowSize} />
+          <primitive object={glowMaterial} attach="material" />
+        </mesh>
 
-      {/* 카드 이미지 */}
-      <mesh
-        ref={meshRef}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-      >
-        <planeGeometry args={cardSize} />
-        <primitive object={roundedMaterial} attach="material" />
-      </mesh>
+        {/* 카드 이미지 */}
+        <mesh
+          ref={meshRef}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerOver={() => setHovered(true)}
+          onPointerOut={() => setHovered(false)}
+        >
+          <planeGeometry args={cardSize} />
+          <primitive object={roundedMaterial} attach="material" />
+        </mesh>
+      </group>
     </Billboard>
   );
 }

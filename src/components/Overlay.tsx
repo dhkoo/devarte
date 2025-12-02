@@ -43,18 +43,51 @@ export default function Overlay({ activeItem }: OverlayProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            style={{ marginBottom: isMobile ? '12px' : '20px' }}
+            style={{ marginBottom: activeItem.tags && activeItem.tags.length > 0 ? '12px' : (isMobile ? '12px' : '20px') }}
             className="text-xl md:text-2xl font-bold text-white tracking-tight"
           >
             {activeItem.title}
           </motion.h2>
+
+          {activeItem.tags && activeItem.tags.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+                marginBottom: isMobile ? '12px' : '20px',
+              }}
+            >
+              {activeItem.tags.slice(0, 3).map((tag) => (
+                <span
+                  key={tag}
+                  style={{
+                    padding: '4px 12px',
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    borderRadius: '6px',
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </motion.div>
+          )}
 
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="text-sm md:text-base text-white/50 leading-relaxed"
-            style={{ wordBreak: 'keep-all' }}
+            style={{ wordBreak: 'keep-all', whiteSpace: 'pre-line' }}
           >
             {activeItem.description}
           </motion.p>

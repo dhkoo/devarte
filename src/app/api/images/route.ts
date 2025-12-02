@@ -6,6 +6,7 @@ interface ImageMetadata {
   title: string;
   description: string;
   links?: string[];
+  tags?: string[];
 }
 
 export async function GET() {
@@ -31,6 +32,7 @@ export async function GET() {
       title: metadata[file]?.title || file.replace(/\.[^/.]+$/, ''),
       description: metadata[file]?.description || '',
       links: metadata[file]?.links,
+      tags: metadata[file]?.tags?.slice(0, 3), // 최대 3개
     }));
 
     return NextResponse.json(images);

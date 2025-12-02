@@ -31,7 +31,7 @@ export default function Overlay({ activeItem }: OverlayProps) {
             backgroundColor: 'rgba(0, 0, 0, 0.45)',
             left: isMobile ? '16px' : '64px',
             right: isMobile ? '16px' : 'auto',
-            width: isMobile ? 'auto' : '320px',
+            width: isMobile ? 'auto' : '400px',
             ...(isMobile
               ? { top: '16px' }
               : { top: '50%', marginTop: '-120px' }
@@ -54,6 +54,7 @@ export default function Overlay({ activeItem }: OverlayProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="text-sm md:text-base text-white/50 leading-relaxed"
+            style={{ wordBreak: 'keep-all' }}
           >
             {activeItem.description}
           </motion.p>

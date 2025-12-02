@@ -21,9 +21,11 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
   const isPointerDown = useRef(false);
   const hasDragged = useRef(false);
   const targetRotation = useRef<THREE.Quaternion | null>(null);
+  const hasEverFocused = useRef(false);
 
   const radius = 6;
   const dragThreshold = 8;
+  const autoRotateSpeed = 0.08; // 자동 자전 속도
 
   const itemsWithPosition = useMemo(() => {
     const n = images.length;
@@ -101,7 +103,16 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
     if (targetRotation.current) {
       groupRef.current.quaternion.slerp(targetRotation.current, delta * 3);
     } else {
-      // 회전 적용
+      // 포커싱 전에만 자동 자전
+      if (!hasEverFocused.current && !isPointerDown.current) {
+        const autoRotY = new THREE.Quaternion().setFromAxisAngle(
+          new THREE.Vector3(0, 1, 0),
+          autoRotateSpeed * delta
+        );
+        groupRef.current.quaternion.premultiply(autoRotY);
+      }
+
+      // 드래그 회전 적용
       if (Math.abs(rotationVelocity.current.x) > 0.0001 || Math.abs(rotationVelocity.current.y) > 0.0001) {
         const rotY = new THREE.Quaternion().setFromAxisAngle(
           new THREE.Vector3(0, 1, 0),
@@ -127,6 +138,9 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
   const handleImageClick = useCallback((id: number) => {
     const item = itemsWithPosition.find(i => i.id === id);
     if (!item || !groupRef.current) return;
+
+    // 한번 포커싱되면 자동 자전 중지
+    hasEverFocused.current = true;
 
     // 속도 초기화
     rotationVelocity.current = { x: 0, y: 0 };

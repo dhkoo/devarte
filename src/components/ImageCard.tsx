@@ -221,8 +221,8 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
       const ratioY = cardSize[1] / (cardSize[1] + 0.9);
       glowMaterial.uniforms.cardRatio.value.set(ratioX, ratioY);
 
-      // 선택된 카드는 강한 후광, 호버는 중간, 기본은 약한 후광
-      const targetIntensity = isSelected ? 1.0 : hovered ? 0.6 : 0.25;
+      // 선택된 카드는 강한 후광, 호버는 중간, 기본은 없음
+      const targetIntensity = isSelected ? 1.0 : hovered ? 0.6 : 0;
       glowMaterial.uniforms.intensity.value = THREE.MathUtils.lerp(
         glowMaterial.uniforms.intensity.value,
         targetIntensity,

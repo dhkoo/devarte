@@ -28,13 +28,16 @@ export default function Overlay({ activeItem }: OverlayProps) {
           transition={{ duration: 0.4, ease: 'easeOut' }}
           style={{
             padding: isMobile ? '20px' : '32px',
-            backgroundColor: 'rgba(0, 0, 0, 0.45)'
+            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            left: isMobile ? '16px' : '64px',
+            right: isMobile ? '16px' : 'auto',
+            width: isMobile ? 'auto' : '320px',
+            ...(isMobile
+              ? { top: '16px' }
+              : { top: '50%', marginTop: '-120px' }
+            )
           }}
-          className={`absolute backdrop-blur-sm border border-white/10 rounded-2xl pointer-events-none ${
-            isMobile
-              ? 'bottom-4 left-4 right-4'
-              : 'top-1/2 left-8 -translate-y-1/2 w-80'
-          }`}
+          className="absolute backdrop-blur-sm border border-white/10 rounded-2xl pointer-events-none"
         >
           <motion.h2
             initial={{ opacity: 0, y: 10 }}

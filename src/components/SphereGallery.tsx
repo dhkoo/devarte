@@ -23,16 +23,22 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
   const targetRotation = useRef<THREE.Quaternion | null>(null);
   const hasEverFocused = useRef(false);
 
-  const radius = 6;
   const dragThreshold = 8;
   const autoRotateSpeed = 0.08; // 자동 자전 속도
 
+  // 이미지 수에 따라 반지름 동적 조절 (적으면 오밀조밀, 많으면 넓게)
+  // 포커싱 시에는 최소 5.5 이상으로 확대하여 뒤 카드가 가려지지 않도록
+  const baseRadius = Math.max(3, Math.min(6, 2 + Math.sqrt(images.length)));
+  const radius = activeItem ? Math.max(5.5, baseRadius) : baseRadius;
+
   const itemsWithPosition = useMemo(() => {
     const n = images.length;
+    if (n === 0) return [];
+
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
     return images.map((item, i) => {
-      const y = 1 - (i / (n - 1)) * 2;
+      const y = n === 1 ? 0 : 1 - (i / (n - 1)) * 2;
       const radiusAtY = Math.sqrt(1 - y * y);
       const theta = goldenAngle * i;
 
@@ -47,7 +53,7 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
         vector: position.clone().normalize()
       };
     });
-  }, [images]);
+  }, [images, radius]);
 
   // 포커스 해제 함수
   const clearFocus = useCallback(() => {

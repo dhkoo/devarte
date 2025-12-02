@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useMemo, useEffect, useCallback } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useRef, useMemo, useEffect, useCallback, useState } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ImageItem } from '@/data/images';
 import ImageCard from './ImageCard';
@@ -49,6 +49,15 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
     });
   }, [images]);
 
+  // 포커스 해제 함수
+  const clearFocus = useCallback(() => {
+    if (activeItem) {
+      onSelect(null);
+      hasEverFocused.current = false;
+      targetRotation.current = null;
+    }
+  }, [activeItem, onSelect]);
+
   useEffect(() => {
     const onPointerDown = (e: PointerEvent) => {
       isPointerDown.current = true;
@@ -86,16 +95,25 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
       isPointerDown.current = false;
     };
 
+    // ESC 키로 포커스 해제
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        clearFocus();
+      }
+    };
+
     window.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('keydown', onKeyDown);
 
     return () => {
       window.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('keydown', onKeyDown);
     };
-  }, []);
+  }, [clearFocus]);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
@@ -161,8 +179,15 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
     targetRotation.current = targetQ;
   }, [itemsWithPosition, onSelect]);
 
+  // 빈 영역 클릭 시 포커스 해제
+  const handlePointerMissed = useCallback(() => {
+    if (activeItem && !hasDragged.current) {
+      clearFocus();
+    }
+  }, [activeItem, clearFocus]);
+
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} onPointerMissed={handlePointerMissed}>
       {itemsWithPosition.map((item) => (
         <ImageCard
           key={item.id}

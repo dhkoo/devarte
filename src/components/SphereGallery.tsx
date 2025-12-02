@@ -130,13 +130,15 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
     if (targetRotation.current) {
       groupRef.current.quaternion.slerp(targetRotation.current, delta * 3);
     } else {
-      // 포커싱 전에만 자동 자전
+      // 포커싱 전에만 자동 자전 (사선 방향: 오른쪽 위에서 왼쪽 아래로)
       if (!hasEverFocused.current && !isPointerDown.current) {
-        const autoRotY = new THREE.Quaternion().setFromAxisAngle(
-          new THREE.Vector3(0, 1, 0),
-          autoRotateSpeed * delta
+        // 대각선 축 (오른쪽 하단 → 왼쪽 상단 방향)
+        const diagonalAxis = new THREE.Vector3(-1, 1, 0).normalize();
+        const autoRot = new THREE.Quaternion().setFromAxisAngle(
+          diagonalAxis,
+          -autoRotateSpeed * delta
         );
-        groupRef.current.quaternion.premultiply(autoRotY);
+        groupRef.current.quaternion.premultiply(autoRot);
       }
 
       // 드래그 회전 적용

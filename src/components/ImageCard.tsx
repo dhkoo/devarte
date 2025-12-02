@@ -112,15 +112,13 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
     });
   }, [texture]);
 
-  // 후광 셰이더 머티리얼 (둥근 사각형)
+  // 후광 셰이더 머티리얼 (중앙에서 퍼지는 원형)
   const glowMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
         intensity: { value: 0.3 },
         color: { value: new THREE.Color(0x4488ff) },
-        radius: { value: 0.05 },
-        cardRatio: { value: new THREE.Vector2(0.78, 0.78) },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -133,41 +131,19 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
         uniform float time;
         uniform float intensity;
         uniform vec3 color;
-        uniform float radius;
-        uniform vec2 cardRatio;
         varying vec2 vUv;
-
-        float roundedBoxSDF(vec2 p, vec2 b, float r) {
-          vec2 q = abs(p) - b + r;
-          return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
-        }
 
         void main() {
           vec2 p = vUv - 0.5;
-
-          // 내부 박스 (카드 경계에 맞춤)
-          vec2 innerBox = cardRatio * 0.5;
-          // 외부 박스 (후광 바깥 경계)
-          vec2 outerBox = vec2(0.5, 0.5);
-
-          float innerDist = roundedBoxSDF(p, innerBox, radius);
-          float outerDist = roundedBoxSDF(p, outerBox, radius * 1.2);
+          float dist = length(p) * 2.0; // 0 ~ 1 범위로 정규화
 
           // 펄스 애니메이션
-          float pulse = sin(time * 2.0) * 0.1 + 0.9;
+          float pulse = sin(time * 2.0) * 0.08 + 0.92;
 
-          // 카드 경계에서 바깥으로 글로우
-          float glow = smoothstep(0.12, 0.0, innerDist) * intensity * pulse;
+          // 중앙에서 바깥으로 부드럽게 페이드아웃
+          float glow = (1.0 - smoothstep(0.0, 1.0, dist)) * intensity * pulse;
 
-          // 바깥쪽 경계에서 페이드아웃 (둥근 모서리)
-          float outerFade = 1.0 - smoothstep(-0.01, 0.02, outerDist);
-
-          // 안쪽은 투명하게 (카드 경계에서 바로 시작)
-          float innerMask = smoothstep(0.0, 0.008, innerDist);
-
-          float alpha = glow * innerMask * outerFade;
-
-          gl_FragColor = vec4(color, alpha);
+          gl_FragColor = vec4(color, glow);
         }
       `,
       transparent: true,
@@ -216,11 +192,6 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
     if (glowRef.current && glowMaterial.uniforms) {
       glowMaterial.uniforms.time.value = state.clock.elapsedTime;
 
-      // 카드와 후광의 비율 업데이트
-      const ratioX = cardSize[0] / (cardSize[0] + 0.7);
-      const ratioY = cardSize[1] / (cardSize[1] + 0.9);
-      glowMaterial.uniforms.cardRatio.value.set(ratioX, ratioY);
-
       // 선택된 카드는 강한 후광, 호버는 중간, 기본은 없음
       const targetIntensity = isSelected ? 1.0 : hovered ? 0.6 : 0;
       glowMaterial.uniforms.intensity.value = THREE.MathUtils.lerp(
@@ -265,8 +236,9 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
     pointerDownPos.current = null;
   };
 
-  // 후광 크기는 카드보다 약간 크게
-  const glowSize: [number, number] = [cardSize[0] + 0.7, cardSize[1] + 0.9];
+  // 후광 크기는 카드보다 약간 크게 (원형이므로 정사각형)
+  const maxCardSize = Math.max(cardSize[0], cardSize[1]);
+  const glowSize: [number, number] = [maxCardSize + 1.5, maxCardSize + 1.5];
 
   return (
     <Billboard position={position} follow={true} lockX={false} lockY={false} lockZ={false}>

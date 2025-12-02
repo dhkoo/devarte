@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useMemo, useEffect } from 'react';
-import { useFrame, ThreeEvent } from '@react-three/fiber';
+import { useFrame, useThree, ThreeEvent } from '@react-three/fiber';
 import { useTexture, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { ImageItem } from '@/data/images';
@@ -29,6 +29,15 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
   const [hovered, setHovered] = useState(false);
   const [cardSize, setCardSize] = useState<[number, number]>([MAX_WIDTH, MAX_HEIGHT]);
   const texture = useTexture(item.url);
+  const { size } = useThree();
+
+  // 모바일 환경에서 카드 크기 스케일 조정 (768px 미만)
+  const mobileScale = useMemo(() => {
+    if (size.width < 768) {
+      return 0.7; // 모바일에서 70% 크기
+    }
+    return 1;
+  }, [size.width]);
 
   // 각 카드마다 다른 애니메이션 오프셋 (아이템 id 기반)
   const floatOffset = useMemo(() => item.id * 1.5, [item.id]);
@@ -177,8 +186,9 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
 
   useFrame((state, delta) => {
     if (meshRef.current) {
-      // 선택된 이미지는 목표 크기, 호버는 1.15배, 기본은 1배
-      const targetScale = isSelected ? selectedScale : hovered ? 1.15 : 1;
+      // 선택된 이미지는 목표 크기, 호버는 1.15배, 기본은 1배 (모바일 스케일 적용)
+      const baseScale = isSelected ? selectedScale : hovered ? 1.15 : 1;
+      const targetScale = baseScale * mobileScale;
       meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
     }
 
@@ -227,8 +237,9 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
           : new THREE.Color(0x4466aa);
       glowMaterial.uniforms.color.value.lerp(targetColor, delta * 5);
 
-      // 후광 스케일도 조정 (카드와 동일하게)
-      const glowScale = isSelected ? selectedScale : hovered ? 1.15 : 1.0;
+      // 후광 스케일도 조정 (카드와 동일하게, 모바일 스케일 적용)
+      const baseGlowScale = isSelected ? selectedScale : hovered ? 1.15 : 1.0;
+      const glowScale = baseGlowScale * mobileScale;
       glowRef.current.scale.lerp(new THREE.Vector3(glowScale, glowScale, 1), delta * 5);
     }
   });

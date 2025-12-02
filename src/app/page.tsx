@@ -19,8 +19,8 @@ export default function Home() {
       </div>
 
       {/* Header / Logo */}
-      <div className="absolute top-8 left-8 z-20 pointer-events-none">
-        <h1 className="font-[family-name:var(--font-noto-sans-kr)] text-xl font-black text-white">
+      <div className="absolute top-4 left-4 md:top-8 md:left-8 z-20 pointer-events-none">
+        <h1 className="font-[family-name:var(--font-noto-sans-kr)] text-base md:text-xl font-black text-white">
           <span className="text-gray-400 font-normal">{'<'}</span>
           개발자의
           <span className="text-cyan-400"> 디자인</span>

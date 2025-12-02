@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useMemo, useEffect, useCallback, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useRef, useMemo, useEffect, useCallback } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ImageItem } from '@/data/images';
 import ImageCard from './ImageCard';
@@ -82,9 +82,12 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
         const moveX = e.clientX - lastPointer.current.x;
         const moveY = e.clientY - lastPointer.current.y;
 
+        // 모바일에서는 터치 드래그가 더 자연스럽도록 감도 조정
+        const sensitivity = window.innerWidth < 768 ? 0.0015 : 0.001;
+
         rotationVelocity.current = {
-          x: moveY * 0.001,
-          y: moveX * 0.001
+          x: moveY * sensitivity,
+          y: moveX * sensitivity
         };
       }
 

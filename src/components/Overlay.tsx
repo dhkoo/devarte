@@ -26,8 +26,11 @@ export default function Overlay({ activeItem }: OverlayProps) {
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: isMobile ? 0 : -50, y: isMobile ? 50 : 0 }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
-          style={{ padding: isMobile ? '20px' : '32px' }}
-          className={`absolute bg-black/70 backdrop-blur-md border border-white/10 rounded-2xl pointer-events-none ${
+          style={{
+            padding: isMobile ? '20px' : '32px',
+            backgroundColor: 'rgba(0, 0, 0, 0.45)'
+          }}
+          className={`absolute backdrop-blur-sm border border-white/10 rounded-2xl pointer-events-none ${
             isMobile
               ? 'bottom-4 left-4 right-4'
               : 'top-1/2 left-8 -translate-y-1/2 w-80'

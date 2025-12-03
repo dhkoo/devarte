@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageItem } from '@/data/images';
 
@@ -10,6 +10,8 @@ interface OverlayProps {
 
 export default function Overlay({ activeItem }: OverlayProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [needsScroll, setNeedsScroll] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -17,6 +19,15 @@ export default function Overlay({ activeItem }: OverlayProps) {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (scrollRef.current && isMobile) {
+      const { scrollHeight, clientHeight } = scrollRef.current;
+      setNeedsScroll(scrollHeight > clientHeight);
+    } else {
+      setNeedsScroll(false);
+    }
+  }, [activeItem, isMobile]);
 
   return (
     <AnimatePresence>
@@ -27,18 +38,29 @@ export default function Overlay({ activeItem }: OverlayProps) {
           exit={{ opacity: 0, x: isMobile ? 0 : -50, y: isMobile ? 50 : 0 }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
           style={{
-            padding: isMobile ? '20px' : '32px',
-            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backgroundColor: 'rgba(0, 0, 0, 0.65)',
             left: isMobile ? '16px' : '64px',
             right: isMobile ? '16px' : 'auto',
             width: isMobile ? 'auto' : '400px',
+            pointerEvents: isMobile ? 'auto' : 'none',
+            overflow: 'hidden',
             ...(isMobile
-              ? { top: '16px' }
-              : { top: '50%', marginTop: '-120px' }
+              ? { top: '16px', maxHeight: 'calc(100dvh - 32px)' }
+              : { top: '50%', marginTop: '-120px', padding: '32px' }
             )
           }}
-          className="absolute backdrop-blur-sm border border-white/10 rounded-2xl pointer-events-none"
+          className="absolute backdrop-blur-sm border border-white/10 rounded-2xl"
         >
+          <div
+            ref={scrollRef}
+            style={{
+              padding: isMobile ? '20px' : '0',
+              ...(isMobile
+                ? { maxHeight: 'calc(100dvh - 32px - 2px)', overflowY: 'auto' }
+                : {}
+              )
+            }}
+          >
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -128,6 +150,8 @@ export default function Overlay({ activeItem }: OverlayProps) {
               ))}
             </motion.div>
           )}
+          <div style={{ height: (isMobile && needsScroll) ? '40px' : '10px', flexShrink: 0 }} />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

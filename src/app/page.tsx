@@ -10,6 +10,7 @@ export default function Home() {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [activeItem, setActiveItem] = useState<ImageItem | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     fetch('/api/images')
@@ -24,26 +25,43 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setIsReady(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   const showLogo = !(isMobile && activeItem);
 
   return (
     <main className="relative w-full h-screen overflow-hidden bg-black">
-      <div className="absolute top-0 left-0 w-full h-full z-0">
+      {/* 3D Scene with fade-in */}
+      <motion.div
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={isReady ? { opacity: 1, scale: 1 } : {}}
+        transition={{ duration: 1.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="absolute top-0 left-0 w-full h-full z-0"
+      >
         <Scene images={images} onSelect={setActiveItem} activeItem={activeItem} />
-      </div>
+      </motion.div>
 
-      <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
+      {/* Overlay */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={isReady ? { opacity: 1 } : {}}
+        transition={{ duration: 1, delay: 0.3 }}
+        className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
+      >
         <Overlay activeItem={activeItem} />
-      </div>
+      </motion.div>
 
       {/* Header / Logo */}
       <AnimatePresence>
         {showLogo && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
             className="absolute z-20 pointer-events-none"
             style={{
               top: isMobile ? '16px' : '24px',

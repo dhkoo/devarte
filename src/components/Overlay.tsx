@@ -32,25 +32,34 @@ export default function Overlay({ activeItem }: OverlayProps) {
   return (
     <AnimatePresence>
       {activeItem && (
-        <motion.div
-          initial={{ opacity: 0, x: isMobile ? 0 : -50, y: isMobile ? 50 : 0 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          exit={{ opacity: 0, x: isMobile ? 0 : -50, y: isMobile ? 50 : 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
+        <div
+          className="absolute"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.65)',
             left: isMobile ? '16px' : '64px',
             right: isMobile ? '16px' : 'auto',
-            width: isMobile ? 'auto' : '400px',
-            pointerEvents: isMobile ? 'auto' : 'none',
-            overflow: 'hidden',
             ...(isMobile
-              ? { top: '16px', maxHeight: 'calc(100dvh - 32px)' }
-              : { top: '50%', marginTop: '-120px', padding: '32px' }
+              ? { top: '16px' }
+              : { top: '50%', transform: 'translateY(-50%)' }
             )
           }}
-          className="absolute backdrop-blur-sm border border-white/10 rounded-2xl"
         >
+          <motion.div
+            initial={{ opacity: 0, x: isMobile ? 0 : -50, y: isMobile ? 50 : 0 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, x: isMobile ? 0 : -50, y: isMobile ? 50 : 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              width: isMobile ? 'auto' : '400px',
+              pointerEvents: isMobile ? 'auto' : 'none',
+              overflow: 'hidden',
+              ...(isMobile
+                ? { maxHeight: 'calc(100dvh - 32px)' }
+                : { padding: '32px' }
+              )
+            }}
+            className="backdrop-blur-sm border border-white/10 rounded-2xl"
+          >
           <div
             ref={scrollRef}
             style={{
@@ -152,7 +161,8 @@ export default function Overlay({ activeItem }: OverlayProps) {
           )}
           <div style={{ height: (isMobile && needsScroll) ? '40px' : '10px', flexShrink: 0 }} />
           </div>
-        </motion.div>
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

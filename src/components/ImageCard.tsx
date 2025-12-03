@@ -45,8 +45,9 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
   // 이미지 비율에 맞춰 카드 크기 계산
   useEffect(() => {
     if (texture.image) {
-      const imgWidth = texture.image.width;
-      const imgHeight = texture.image.height;
+      const img = texture.image as HTMLImageElement;
+      const imgWidth = img.width;
+      const imgHeight = img.height;
       const imgRatio = imgWidth / imgHeight;
       const cardRatio = MAX_WIDTH / MAX_HEIGHT;
 

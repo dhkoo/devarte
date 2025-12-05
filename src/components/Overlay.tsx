@@ -6,9 +6,10 @@ import { ImageItem } from '@/data/images';
 
 interface OverlayProps {
   activeItem: ImageItem | null;
+  onClose?: () => void;
 }
 
-export default function Overlay({ activeItem }: OverlayProps) {
+export default function Overlay({ activeItem, onClose }: OverlayProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [needsScroll, setNeedsScroll] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -71,6 +72,29 @@ export default function Overlay({ activeItem }: OverlayProps) {
               )
             }}
           >
+          {/* 모바일 닫기 버튼 */}
+          {isMobile && onClose && (
+            <button
+              onClick={onClose}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'none',
+                border: 'none',
+                padding: '4px',
+                cursor: 'pointer',
+                pointerEvents: 'auto',
+                zIndex: 10,
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

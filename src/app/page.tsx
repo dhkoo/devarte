@@ -51,7 +51,7 @@ export default function Home() {
         transition={{ duration: 1, delay: 0.3 }}
         className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
       >
-        <Overlay activeItem={activeItem} />
+        <Overlay activeItem={activeItem} onClose={() => setActiveItem(null)} />
       </motion.div>
 
       {/* Header / Logo */}

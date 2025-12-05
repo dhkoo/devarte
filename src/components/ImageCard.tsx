@@ -255,8 +255,14 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
           ref={meshRef}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
-          onPointerOver={() => setHovered(true)}
-          onPointerOut={() => setHovered(false)}
+          onPointerOver={() => {
+            setHovered(true);
+            document.body.style.cursor = 'pointer';
+          }}
+          onPointerOut={() => {
+            setHovered(false);
+            document.body.style.cursor = 'auto';
+          }}
         >
           <planeGeometry args={cardSize} />
           <primitive object={roundedMaterial} attach="material" />

@@ -64,6 +64,14 @@ export default function SphereGallery({ images, onSelect, activeItem }: SphereGa
     }
   }, [activeItem, onSelect]);
 
+  // activeItem이 외부에서 null로 바뀌었을 때 (X 버튼 등) 자전 재개
+  useEffect(() => {
+    if (activeItem === null) {
+      hasEverFocused.current = false;
+      targetRotation.current = null;
+    }
+  }, [activeItem]);
+
   useEffect(() => {
     const onPointerDown = (e: PointerEvent) => {
       isPointerDown.current = true;

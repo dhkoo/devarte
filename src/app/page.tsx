@@ -60,7 +60,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, transition: { duration: 0.15, delay: 0 } }}
             transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
             className="absolute z-20 pointer-events-none"
             style={{

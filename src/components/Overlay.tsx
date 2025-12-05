@@ -33,6 +33,7 @@ export default function Overlay({ activeItem }: OverlayProps) {
     <AnimatePresence>
       {activeItem && (
         <div
+          key={activeItem.id}
           className="absolute"
           style={{
             left: isMobile ? '16px' : '64px',

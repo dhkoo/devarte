@@ -139,7 +139,7 @@ export default function ImageCard({ item, position, onClick, isSelected = false,
           float dist = length(p) * 2.0; // 0 ~ 1 범위로 정규화
 
           // 펄스 애니메이션
-          float pulse = sin(time * 2.0) * 0.08 + 0.92;
+          float pulse = sin(time * 2.5) * 0.18 + 0.82;
 
           // 중앙에서 바깥으로 부드럽게 페이드아웃
           float glow = (1.0 - smoothstep(0.0, 1.0, dist)) * intensity * pulse;

@@ -19,10 +19,17 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "개발자의 디자인",
-  description: "기술과 디자인으로 완성된 프로젝트 아카이브",
+  title: "Devarte - 개발자의 디자인",
+  description: "개발자의 설계(Design), 개발자의 디자인(Design)",
   icons: {
     icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    title: "Devarte - 개발자의 디자인",
+    description: "개발자의 설계(Design), 개발자의 디자인(Design)",
+    images: ["/logo.png"],
+    type: "website",
   },
 };
 

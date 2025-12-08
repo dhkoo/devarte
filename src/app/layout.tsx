@@ -19,14 +19,14 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "개발자의 디자인",
+  title: "개발자의디자인",
   description: "개발자의 설계(Design), 개발자의 디자인(Design)",
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
   },
   openGraph: {
-    title: "개발자의 디자인",
+    title: "개발자의디자인",
     description: "개발자의 설계(Design), 개발자의 디자인(Design)",
     images: ["/logo.png"],
     type: "website",

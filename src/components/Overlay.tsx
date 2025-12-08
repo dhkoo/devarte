@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageItem } from '@/data/images';
 
@@ -12,7 +12,14 @@ interface OverlayProps {
 export default function Overlay({ activeItem, onClose }: OverlayProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [needsScroll, setNeedsScroll] = useState(false);
+  const [copied, setCopied] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleCopyContact = useCallback((contact: string) => {
+    navigator.clipboard.writeText(contact);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -99,13 +106,13 @@ export default function Overlay({ activeItem, onClose }: OverlayProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            style={{ marginBottom: activeItem.tags && activeItem.tags.length > 0 ? '12px' : (isMobile ? '12px' : '20px') }}
+            style={{ marginBottom: (activeItem.tags && activeItem.tags.length > 0) || activeItem.contact ? '12px' : (isMobile ? '12px' : '20px') }}
             className="text-xl md:text-2xl font-bold text-white tracking-tight"
           >
             {activeItem.title}
           </motion.h2>
 
-          {activeItem.tags && activeItem.tags.length > 0 && (
+          {(activeItem.tags && activeItem.tags.length > 0 || activeItem.contact) && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -117,7 +124,7 @@ export default function Overlay({ activeItem, onClose }: OverlayProps) {
                 marginBottom: isMobile ? '12px' : '20px',
               }}
             >
-              {activeItem.tags.slice(0, 3).map((tag) => (
+              {activeItem.tags?.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
                   style={{
@@ -135,6 +142,41 @@ export default function Overlay({ activeItem, onClose }: OverlayProps) {
                   {tag}
                 </span>
               ))}
+              {activeItem.contact && (
+                <button
+                  onClick={() => handleCopyContact(activeItem.contact!)}
+                  style={{
+                    padding: '4px 12px',
+                    background: copied
+                      ? 'linear-gradient(135deg, rgba(74, 222, 128, 0.3) 0%, rgba(74, 222, 128, 0.1) 100%)'
+                      : 'linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0.05) 100%)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    borderRadius: '6px',
+                    color: copied ? 'rgba(74, 222, 128, 0.9)' : 'rgba(34, 211, 238, 0.9)',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    border: copied
+                      ? '1px solid rgba(74, 222, 128, 0.4)'
+                      : '1px solid rgba(34, 211, 238, 0.3)',
+                    cursor: 'pointer',
+                    pointerEvents: 'auto',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!copied) {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, rgba(34, 211, 238, 0.35) 0%, rgba(34, 211, 238, 0.15) 100%)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!copied) {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, rgba(34, 211, 238, 0.05) 100%)';
+                    }
+                  }}
+                >
+                  {copied ? 'Copied' : activeItem.contact}
+                </button>
+              )}
             </motion.div>
           )}
 

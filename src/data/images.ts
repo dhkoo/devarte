@@ -5,4 +5,5 @@ export interface ImageItem {
   description: string;
   links?: string[];
   tags?: string[];
+  contact?: string;
 }
